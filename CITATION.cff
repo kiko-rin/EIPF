@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use EIPF in your research or project, please cite this specification."
+title: "EIPF - Electric Interactive Publications Format"
+abstract: >-
+  A vendor-neutral, IP-neutral specification for interactive digital
+  publications, defining a ZIP-based three-layer container format
+  (Series/Album/Entry), the scene-entry content model, an embedded
+  renderer IPC protocol, and optional signature/device/encryption
+  security attributes.
+version: 2.0.1-beta1
+date-released: 2026-08-09
+license: CC0-1.0
+keywords:
+  - digital publication
+  - specification
+  - interactive fiction
+  - eipf
+  - scenario

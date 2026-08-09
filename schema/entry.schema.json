@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://eipf.local/schema/entry.schema.json",
+  "title": "EIPF Entry",
+  "description": "index.json - Entry layer metadata",
+  "type": "object",
+  "required": ["id", "formatVersion", "contentType", "language", "title", "structure", "renderer"],
+  "properties": {
+    "id": { "type": "string" },
+    "formatVersion": { "type": "string", "enum": ["2.0.0", "2.0.1-beta1"] },
+    "contentType": { "type": "string", "const": "scenario" },
+    "language": { "type": "array", "items": { "type": "string" } },
+    "title": { "$ref": "#/definitions/l10n" },
+    "version": { "type": "string" },
+    "structure": {
+      "type": "object",
+      "required": ["root", "text"],
+      "properties": {
+        "root": { "type": "string", "const": "main.xml" },
+        "text": { "type": "string" }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "backgrounds": { "type": "string" },
+        "characters": { "type": "string" },
+        "illustrations": { "type": "string" },
+        "audio": { "type": "string" },
+        "video": { "type": "string" }
+      }
+    },
+    "renderer": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "manifest": { "type": "string" }
+      }
+    },
+    "security": {
+      "type": "object",
+      "description": "Optional security attributes (EIPF 2.0.1-beta1), see spec/eipf-spec.md section 5",
+      "required": ["formatVersion", "enforcement", "signatureAlgorithm", "hashAlgorithm", "contentHash", "signature"],
+      "properties": {
+        "formatVersion": { "type": "string" },
+        "enforcement": {
+          "type": "string",
+          "enum": ["signature", "signature+device", "signature+encryption", "signature+device+encryption"]
+        },
+        "signatureAlgorithm": { "type": "string", "const": "RSASSA-PKCS1-v1_5-SHA256" },
+        "hashAlgorithm": { "type": "string", "const": "SHA-256" },
+        "contentHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "signature": { "type": "string" },
+        "encryption": {
+          "type": "object",
+          "required": ["cipher", "keyWrapAlgorithm", "wrappedKey", "encryptedPrefixes"],
+          "properties": {
+            "cipher": { "type": "string", "const": "AES-256-GCM" },
+            "keyWrapAlgorithm": { "type": "string", "const": "RSA-PKCS1v15-SHA256" },
+            "wrappedKey": { "type": "string" },
+            "encryptedPrefixes": { "type": "array", "items": { "type": "string" } },
+            "packageId": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "l10n": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    }
+  }
+}

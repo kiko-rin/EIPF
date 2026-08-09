@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://eipf.local/schema/renderer-manifest.schema.json",
+  "title": "EIPF Renderer Manifest",
+  "description": "renderer/manifest.json - embedded renderer manifest",
+  "type": "object",
+  "required": ["name", "type", "version", "entry"],
+  "properties": {
+    "name": { "type": "string" },
+    "type": { "type": "string", "const": "embedded-renderer" },
+    "version": { "type": "string" },
+    "entry": { "type": "string" },
+    "engine": { "type": "string" },
+    "style": { "type": "string" },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

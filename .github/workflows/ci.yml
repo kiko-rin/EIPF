@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate JSON Schemas
+        run: |
+          python - <<'EOF'
+          import json, glob
+          files = sorted(glob.glob('schema/*.json'))
+          assert files, 'no schemas found'
+          for f in files:
+              json.load(open(f, encoding='utf-8'))
+              print(f'OK {f}')
+          print(f'{len(files)} schemas valid')
+          EOF
+
+      - name: Check Markdown Links
+        run: |
+          python - <<'EOF'
+          import re, pathlib, sys
+          repo = pathlib.Path('.')
+          files = [p for p in repo.rglob('*.md') if '.github' not in p.parts]
+          errors = 0
+          for p in files:
+              text = p.read_text(encoding='utf-8', errors='replace')
+              for m in re.finditer(r'\[[^\]]*\]\(([^)]+)\)', text):
+                  link = m.group(1).split('#', 1)[0]
+                  if not link or link.startswith(('http://', 'https://', 'mailto:')):
+                      continue
+                  target = (p.parent / link).resolve()
+                  if not target.exists():
+                      print(f'BROKEN: {p} -> {link}')
+                      errors += 1
+          if errors:
+              sys.exit(f'{errors} broken link(s)')
+          print('all markdown links ok')
+          EOF
+
+      - name: Check JSON in Markdown Fences
+        run: |
+          python - <<'EOF'
+          import json, re, pathlib, sys
+          # 仅校验以 { 或 [ 开头的完整 JSON 文档块；片段示例（如 "security": {...}）跳过
+          files = [p for p in pathlib.Path('.').rglob('*.md') if '.github' not in p.parts]
+          errors = 0
+          checked = 0
+          for p in files:
+              text = p.read_text(encoding='utf-8', errors='replace')
+              for m in re.finditer(r'```json\n(.*?)```', text, re.S):
+                  body = m.group(1).strip()
+                  if not (body.startswith('{') or body.startswith('[')):
+                      continue
+                  checked += 1
+                  try:
+                      json.loads(body)
+                  except Exception as e:
+                      print(f'BAD JSON in {p}: {e}')
+                      errors += 1
+          if errors:
+              sys.exit(f'{errors} invalid JSON block(s)')
+          print(f'{checked} JSON fenced blocks valid')
+          EOF

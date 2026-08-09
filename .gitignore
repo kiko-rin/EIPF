@@ -1,0 +1,33 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+Desktop.ini
+*~
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Local tooling
+.output/
+coverage/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# CI artifacts
+.virtual_documents/
